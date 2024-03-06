@@ -16,7 +16,11 @@ const BlogComp = ({ title, text, image, author, date }) => {
             <p className="card-text">
               <small className="text-muted">By {author} on {date}</small>
             </p>
+<<<<<<< HEAD
             <Link to="#" className="btn btn-primary">Read More</Link>
+=======
+            <Link href="#" className="btn btn-primary">Read More</Link>
+>>>>>>> origin/main
           </div>
         </div>
       </div>
