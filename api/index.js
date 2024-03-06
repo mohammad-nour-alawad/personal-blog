@@ -9,7 +9,7 @@ const secret = 'dawfwq320ie-r9310ie9381231r0fimaps';
 
 const { hashPassword, comparePassword } = require('./hasher');
 const User = require("./models/User")
-
+const Blog = require("./models/Blog");
 
 const app = express();
 
@@ -53,7 +53,10 @@ app.post('/login', async (req, res) => {
             if (isValid) {
                 try {
                     const token = jwt.sign({ email: user.email, id: user._id }, secret);
-                    res.cookie('token', token, { httpOnly: true, sameSite: 'strict' }).json({ message: 'ok' });
+                    res.cookie('token', token, { httpOnly: true, sameSite: 'strict' }).json({
+                        id: user._id,
+                        email: user.email
+                     });
 
                 } catch (jwtError) {
                     console.error(jwtError);
@@ -74,6 +77,10 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const {token} = req.cookies;
+    if (!token) {
+        return res.status(401).json({ message: "No token provided" });
+    }
+
     jwt.verify(token, secret, {}, (err, info)=>{
         if (err) throw err;
         res.json(info);
@@ -86,22 +93,79 @@ app.post('/logout', (req, res) => {
     res.cookie('token', '').json('ok');
 });
 
+
+
+app.post('/create', async (req, res) => {
+    try {
+      const { title, text, image } = req.body;
+      var author = "";
+      
+      const {token} = req.cookies;
+      if (!token) {
+        return res.status(401).json({ message: "No token provided" });
+      }
+
+      jwt.verify(token, secret, {}, (err, info)=>{
+          if (err) throw err;
+          author = info.email;
+      });
+        
+      const newBlogPost = new Blog({
+        title,
+        text,
+        image,
+        author,
+      });
+  
+      await newBlogPost.save();
+  
+      res.status(201).json({
+        success: true,
+        data: newBlogPost,
+        message: "Blog post created successfully",
+      });
+    } catch (error) {
+      console.error("Blog creation error:", error);
+      res.status(400).json({
+        success: false,
+        message: "Error creating blog post",
+        error: error.message,
+      });
+    }
+  });
+
+  
 // like.
 // comment.
 
+app.delete('/blogs/:blogId', async (req, res) => {
+    try {
+      const blogId = req.params.blogId;
+      const blog = await Blog.findByIdAndDelete(blogId);
+      res.json(blog);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+});
 
-// add blog.
+app.put('/blogs/:blogId', async (req, res) => {
+    try {
+      const blogId = req.params.blogId;
+      const blog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
+      res.json(blog);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+});
 
-// remove blog.
-
-// update blog.
-
-// list blogs.
-
-
-
-// read more.
-
+app.get('/blogs', async (req, res) => {
+    try {
+      const blogs = await Blog.find({});
+      res.json(blogs);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 
 app.listen(4000, () => {

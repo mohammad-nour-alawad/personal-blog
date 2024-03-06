@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
+import { UserContext } from '../UserContext';
 
 function NavComp() {
-
-  
-  const [email, setEmail] = useState(null);
     
+  const {userInfo, setUserInfo} = useContext(UserContext); 
+
   useEffect(()=>{
     fetch('http://localhost:4000/profile', {credentials: 'include'}).then(response => {
       response.json().then(userInfo => {
-        setEmail(userInfo.email)
+        setUserInfo(userInfo)
       })
     });
   },[]);
@@ -22,9 +22,10 @@ function NavComp() {
       credentials: 'include', 
       method: 'POST',
     });
-    setEmail(null);
+    setUserInfo(null);
   };
 
+  const email = userInfo? userInfo.email : false;
   return (
     <main>
       <header>
@@ -38,7 +39,7 @@ function NavComp() {
               <ul className="navbar-nav ms-auto">
                 {email && (<>
                   <li className="nav-item">
-                    <Link className="nav-link" to='/createBlog'>Create Blog</Link>
+                    <Link className="nav-link" to='/create'>Create Blog</Link>
                   </li>
                   <li className="nav-item">
                     <Link className="nav-link" onClick={logout}>Logout</Link>

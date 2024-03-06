@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../UserContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const {setUserInfo} = useContext(UserContext);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -23,7 +25,7 @@ const LoginPage = () => {
       const data = await response.json();
       
       if (response.ok) {
-        console.log('Login Successful', data);
+        setUserInfo(data);
         navigate('/');
       } else {
         throw new Error(data.message || 'An error occurred during login');

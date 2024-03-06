@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const RegisterPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
     
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,12 +28,9 @@ const RegisterPage = () => {
           password
         }),
       });
-
-      //const data = await response.json();
       
       if (response.status === 200) {
         navigate('/login');
-        // Handle success - perhaps redirect to login page or display a success message
       } else {
         // Handle error - data.message should contain the error message from server
       }

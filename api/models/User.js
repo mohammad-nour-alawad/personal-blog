@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
     lowercase: true, // Convert email to lowercase to avoid case-sensitivity issues
     validate: {
       validator: function(v) {
-        // Basic validation to check email format, consider using a more comprehensive regex or a package like validator.js for production
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
       },
       message: props => `${props.value} is not a valid email address!`

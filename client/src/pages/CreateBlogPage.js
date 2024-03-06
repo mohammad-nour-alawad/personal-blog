@@ -1,24 +1,81 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import Swal from 'sweetalert2';
 
 function CreateBlogPage() {
+  const navigate = useNavigate();
+  
   const [blogPost, setBlogPost] = useState({
     title: '',
     text: '',
-    image: '',
-    author: '',
-    date: ''
+    image: ''
   });
 
   const handleChange = (e) => {
     setBlogPost({ ...blogPost, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(blogPost);
-    alert('Blog Post Submitted: Check the console for the object.');
+  const handleQuillChange = (value) => {
+    setBlogPost({ ...blogPost, text: value });
   };
+    
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  fetch('http://localhost:4000/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(blogPost),
+    credentials: 'include',
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      return response.json().then(data => Promise.reject(data));
+    }
+  })
+  .then(data => {
+    Swal.fire({
+      title: 'Success!',
+      text: 'Your blog post has been created!',
+      icon: 'success',
+      confirmButtonText: 'Great'
+    }).then(() => {
+      navigate('/');
+    });
+  })
+  .catch(error => {
+    Swal.fire({
+      title: 'Error!',
+      text: error.message || 'Some error occurred, please try again later.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  });
+};
+
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline','strike', 'blockquote'],
+      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+      ['link', 'image'],
+      ['clean']
+    ],
+  };
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'image'
+  ];
 
   return (
     <div className="App container mt-5">
@@ -38,13 +95,12 @@ function CreateBlogPage() {
         </div>
         <div className="mb-3">
           <label htmlFor="text" className="form-label">Text:</label>
-          <textarea
-            className="form-control"
-            id="text"
-            name="text"
+          <ReactQuill
+            theme="snow"
             value={blogPost.text}
-            onChange={handleChange}
-            required
+            onChange={handleQuillChange}
+            modules={modules}
+            formats={formats}
           />
         </div>
         <div className="mb-3">
@@ -56,30 +112,6 @@ function CreateBlogPage() {
             name="image"
             value={blogPost.image}
             onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="author" className="form-label">Author:</label>
-          <input
-            type="text"
-            className="form-control"
-            id="author"
-            name="author"
-            value={blogPost.author}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="date" className="form-label">Date:</label>
-          <input
-            type="date"
-            className="form-control"
-            id="date"
-            name="date"
-            value={blogPost.date}
-            onChange={handleChange}
-            required
           />
         </div>
         <button type="submit" className="btn btn-primary">Submit</button>
