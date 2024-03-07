@@ -18,7 +18,7 @@ const BlogListComp = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/blogs?page=${currentPage}&limit=3`);
+      const response = await fetch(`${process.env.API_SERVER}/blogs?page=${currentPage}&limit=3`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -54,7 +54,7 @@ const BlogListComp = () => {
   
   const deleteBlog = async (blogId) => {
     try {
-      const response = await fetch(`http://localhost:4000/blogs/${blogId}`, {
+      const response = await fetch(`${process.env.API_SERVER}/blogs/${blogId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -88,7 +88,7 @@ const BlogListComp = () => {
   
   const saveEditedBlog = async (blogId, updatedBlog) => {
     try {
-      const response = await fetch(`http://localhost:4000/blogs/${blogId}`, {
+      const response = await fetch(`${process.env.API_SERVER}/blogs/${blogId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

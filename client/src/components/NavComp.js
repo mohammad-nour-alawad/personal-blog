@@ -16,7 +16,7 @@ function NavComp() {
   const { userInfo, setUserInfo } = useContext(UserContext);
 
   useEffect(() => {
-    fetch('http://localhost:4000/profile', { credentials: 'include' }).then(response => {
+    fetch(`${process.env.API_SERVER}/profile`, { credentials: 'include' }).then(response => {
       response.json().then(userInfo => {
         setUserInfo(userInfo);
       })
@@ -24,7 +24,7 @@ function NavComp() {
   }, []);
 
   const logout = () => {
-    fetch("http://localhost:4000/logout",
+    fetch(`${process.env.API_SERVER}/logout`,
       {
         credentials: 'include',
         method: 'POST',

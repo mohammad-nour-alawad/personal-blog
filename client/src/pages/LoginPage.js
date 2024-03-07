@@ -13,7 +13,7 @@ const LoginPage = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('http://localhost:4000/login', {
+      const response = await fetch(`${process.env.API_SERVER}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

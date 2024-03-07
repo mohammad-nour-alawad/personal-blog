@@ -25,7 +25,7 @@ function CreateBlogPage() {
 const handleSubmit = (e) => {
   e.preventDefault();
 
-  fetch('http://localhost:4000/create', {
+  fetch(`${process.env.API_SERVER}/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

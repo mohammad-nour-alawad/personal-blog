@@ -18,7 +18,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/register', {
+      const response = await fetch(`${process.env.API_SERVER}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
