@@ -25,7 +25,7 @@ function CreateBlogPage() {
 const handleSubmit = (e) => {
   e.preventDefault();
 
-  fetch(`${process.env.API_SERVER}/create`, {
+  fetch(`${process.env.REACT_APP_API_SERVER}/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

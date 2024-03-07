@@ -18,7 +18,7 @@ const BlogListComp = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await fetch(`${process.env.API_SERVER}/blogs?page=${currentPage}&limit=3`);
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER}/blogs?page=${currentPage}&limit=3`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

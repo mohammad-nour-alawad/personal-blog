@@ -18,7 +18,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.API_SERVER}/register`, {
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
