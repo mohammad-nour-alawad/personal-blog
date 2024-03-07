@@ -1,4 +1,7 @@
-require('dotenv').config({ path: './config.env' });
+require('dotenv').config({ 
+    path: `./.env.${process.env.NODE_ENV || 'development'}` 
+  });
+
 const mongoose = require('mongoose');
 const express = require("express");
 const cors = require("cors");
@@ -15,6 +18,7 @@ const app = express();
 
 
 const url = process.env.MONGODB_URI;
+console.log(url);
 mongoose.connect(url, {})
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
@@ -53,7 +57,7 @@ app.post('/login', async (req, res) => {
             if (isValid) {
                 try {
                     const token = jwt.sign({ email: user.email, id: user._id }, secret);
-                    res.cookie('token', token, { httpOnly: true, sameSite: 'strict' }).json({
+                    res.cookie('token', token, { httpOnly: true, sameSite: 'None', secure: true }).json({
                         id: user._id,
                         email: user.email
                     });
