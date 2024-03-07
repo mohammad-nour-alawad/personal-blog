@@ -54,7 +54,7 @@ const BlogListComp = () => {
   
   const deleteBlog = async (blogId) => {
     try {
-      const response = await fetch(`${process.env.API_SERVER}/blogs/${blogId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER}/blogs/${blogId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -88,7 +88,7 @@ const BlogListComp = () => {
   
   const saveEditedBlog = async (blogId, updatedBlog) => {
     try {
-      const response = await fetch(`${process.env.API_SERVER}/blogs/${blogId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER}/blogs/${blogId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

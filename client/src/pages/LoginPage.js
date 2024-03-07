@@ -13,7 +13,7 @@ const LoginPage = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch(`${process.env.API_SERVER}/login`, {
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
