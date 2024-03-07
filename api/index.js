@@ -16,12 +16,12 @@ const app = express();
 
 const url = process.env.MONGODB_URI;
 mongoose.connect(url, {})
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 
 
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -56,7 +56,7 @@ app.post('/login', async (req, res) => {
                     res.cookie('token', token, { httpOnly: true, sameSite: 'strict' }).json({
                         id: user._id,
                         email: user.email
-                     });
+                    });
 
                 } catch (jwtError) {
                     console.error(jwtError);
@@ -76,98 +76,129 @@ app.post('/login', async (req, res) => {
 
 
 app.get('/profile', (req, res) => {
-    const {token} = req.cookies;
+    const { token } = req.cookies;
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
 
-    jwt.verify(token, secret, {}, (err, info)=>{
+    jwt.verify(token, secret, {}, (err, info) => {
         if (err) throw err;
         res.json(info);
     });
     return;
 });
 
-
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json('ok');
 });
 
-
-
 app.post('/create', async (req, res) => {
     try {
-      const { title, text, image } = req.body;
-      var author = "";
-      
-      const {token} = req.cookies;
-      if (!token) {
-        return res.status(401).json({ message: "No token provided" });
-      }
+        const { title, text, image } = req.body;
+        var author = "";
 
-      jwt.verify(token, secret, {}, (err, info)=>{
-          if (err) throw err;
-          author = info.email;
-      });
-        
-      const newBlogPost = new Blog({
-        title,
-        text,
-        image,
-        author,
-      });
-  
-      await newBlogPost.save();
-  
-      res.status(201).json({
-        success: true,
-        data: newBlogPost,
-        message: "Blog post created successfully",
-      });
+        const { token } = req.cookies;
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+
+        jwt.verify(token, secret, {}, (err, info) => {
+            if (err) throw err;
+            author = info.email;
+        });
+
+        const newBlogPost = new Blog({
+            title,
+            text,
+            image,
+            author,
+        });
+
+        await newBlogPost.save();
+
+        res.status(201).json({
+            success: true,
+            data: newBlogPost,
+            message: "Blog post created successfully",
+        });
     } catch (error) {
-      console.error("Blog creation error:", error);
-      res.status(400).json({
-        success: false,
-        message: "Error creating blog post",
-        error: error.message,
-      });
+        console.error("Blog creation error:", error);
+        res.status(400).json({
+            success: false,
+            message: "Error creating blog post",
+            error: error.message,
+        });
     }
-  });
+});
 
-  
+
 // like.
+app.post('/likes/:blogId', async (req, res) => {
+    try {
+        const blogId = req.params.blogId;
+        const blog = await Blog.findByIdAndUpdate(blogId, { $inc: { likes: 1 } }, { new: true });
+        res.json(blog);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// unlike.
+
+
 // comment.
+
 
 app.delete('/blogs/:blogId', async (req, res) => {
     try {
-      const blogId = req.params.blogId;
-      const blog = await Blog.findByIdAndDelete(blogId);
-      res.json(blog);
+        const blogId = req.params.blogId;
+        const blog = await Blog.findByIdAndDelete(blogId);
+        res.json(blog);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
 app.put('/blogs/:blogId', async (req, res) => {
     try {
-      const blogId = req.params.blogId;
-      const blog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
-      res.json(blog);
+        const blogId = req.params.blogId;
+        const blog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
+        res.json(blog);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
+// app.get('/blogs', async (req, res) => {
+//     try {
+//       const blogs = await Blog.find({}).sort({ createdAt: -1 });
+//       res.json(blogs);
+//     } catch (error) {
+//       res.status(500).json({ message: error.message });
+//     }
+//   });
+
+// Example of what the backend endpoint might look like
 app.get('/blogs', async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     try {
-      const blogs = await Blog.find({});
-      res.json(blogs);
+        const total = await Blog.countDocuments({});
+        const blogs = await Blog.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+        res.json({
+            blogs,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).send(error.message);
     }
-  });
+});
 
 
-app.listen(4000, () => {
+
+//module.exports = app;
+app.listen(process.env.PORT || 4000, () => {
     console.log('Server is running on port 4000');
 });
