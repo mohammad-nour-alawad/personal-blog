@@ -13,12 +13,15 @@ const secret = 'dawfwq320ie-r9310ie9381231r0fimaps';
 const { hashPassword, comparePassword } = require('./hasher');
 const User = require("./models/User")
 const Blog = require("./models/Blog");
+const Like = require("./models/Like");
+const Comment = require("./models/Comment");
+
+
 
 const app = express();
 
 
 const url = process.env.MONGODB_URI;
-console.log(url);
 mongoose.connect(url, {})
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));

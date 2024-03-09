@@ -50,8 +50,6 @@ function NavComp() {
               <ul className="navbar-nav ms-auto">
                 {email && (
                   <>
-                    {/* Notification Bell & User Greeting next to the Create Blog link */}
-                    {/* Uncomment and use the following line if you have FontAwesome installed */}
                     <li className="nav-item">
                       <a className="nav-link">
                         <FontAwesomeIcon icon={faBell} />
@@ -60,9 +58,12 @@ function NavComp() {
                     <li className="nav-item">
                       <span className="nav-link">{userName}</span>
                     </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to='/create'>Create Blog</Link>
-                    </li>
+                    {
+                    email === "mohammad1999alawad@gmail.com" &&
+                      <li className="nav-item">
+                        <Link className="nav-link" to='/create'>Create Blog</Link>
+                      </li>
+                    }
                     <li className="nav-item">
                       <Link className="nav-link" onClick={logout}>Logout</Link>
                     </li>
